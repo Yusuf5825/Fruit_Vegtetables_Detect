@@ -12,6 +12,7 @@ from ultralytics import YOLO
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
 MODELS_DIR = Path(os.environ.get("MODEL_DIR", PROJECT_DIR / "models")).expanduser().resolve()
+MODEL_CACHE_DIR = Path(os.environ.get("MODEL_CACHE_DIR", PROJECT_DIR / ".model_cache")).expanduser().resolve()
 DEFAULT_CONF = 0.35
 IMGSZ = 640
 ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
@@ -30,9 +31,35 @@ app = Flask(
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
 
+def _assemble_part_models(models_dir: Path) -> None:
+    """Join repository-hosted binary parts into cached best.pt files."""
+    if not models_dir.exists():
+        return
+    for model_dir in sorted(models_dir.iterdir()):
+        if not model_dir.is_dir() or (model_dir / "best.pt").is_file():
+            continue
+        parts_dir = model_dir / "parts"
+        parts = sorted(parts_dir.glob("part-*.bin")) if parts_dir.is_dir() else []
+        if not parts:
+            continue
+        target = MODEL_CACHE_DIR / model_dir.name / "best.pt"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        newest = max(p.stat().st_mtime for p in parts)
+        if target.exists() and target.stat().st_mtime >= newest:
+            continue
+        tmp = target.with_suffix(".tmp")
+        with tmp.open("wb") as out:
+            for part in parts:
+                with part.open("rb") as src:
+                    while chunk := src.read(1024 * 1024):
+                        out.write(chunk)
+        tmp.replace(target)
+
+
 def discover_models(models_dir: Path) -> dict[str, Path]:
-    """Find model weights stored as models/<run_name>/best.pt."""
+    """Find normal best.pt files or assemble repository-hosted model parts."""
     found: dict[str, Path] = {}
+    _assemble_part_models(models_dir)
     if not models_dir.exists():
         return found
     for pt_path in sorted(models_dir.rglob("best.pt")):
@@ -40,6 +67,10 @@ def discover_models(models_dir: Path) -> dict[str, Path]:
             rel = pt_path.relative_to(models_dir)
             label = str(rel.parent) if str(rel.parent) != "." else pt_path.stem
             found[label] = pt_path.resolve()
+    if MODEL_CACHE_DIR.exists():
+        for pt_path in sorted(MODEL_CACHE_DIR.rglob("best.pt")):
+            label = str(pt_path.parent.relative_to(MODEL_CACHE_DIR))
+            found.setdefault(label, pt_path.resolve())
     return found
 
 
