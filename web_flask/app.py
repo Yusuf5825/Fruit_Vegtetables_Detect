@@ -1,4 +1,5 @@
 import base64
+import os
 import time
 from pathlib import Path
 
@@ -8,89 +9,75 @@ import torch
 from flask import Flask, jsonify, render_template, request
 from ultralytics import YOLO
 
-# ==============================================================================
-# AYARLAR
-# ==============================================================================
-ROOT_DIR = Path(r"C:\Projeler\Fruits_detect")
-MODELS_DIR = ROOT_DIR / "models"
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = BASE_DIR.parent
+MODELS_DIR = Path(os.environ.get("MODEL_DIR", PROJECT_DIR / "models")).expanduser().resolve()
 DEFAULT_CONF = 0.35
 IMGSZ = 640
 ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
-
-BASE_DIR = Path(__file__).resolve().parent
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+DEVICE_LABEL = (
+    f"{torch.cuda.get_device_name(0)} (CUDA)"
+    if torch.cuda.is_available()
+    else "CPU"
+)
 
 app = Flask(
     __name__,
     template_folder=str(BASE_DIR / "templates"),
     static_folder=str(BASE_DIR / "static"),
 )
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
 
 def discover_models(models_dir: Path) -> dict[str, Path]:
-    """models klasörü altındaki tüm best.pt ağırlıklarını bulur."""
+    """Find model weights stored as models/<run_name>/best.pt."""
     found: dict[str, Path] = {}
     if not models_dir.exists():
         return found
-
     for pt_path in sorted(models_dir.rglob("best.pt")):
-        if not pt_path.is_file():
-            continue
-        rel = pt_path.relative_to(models_dir)
-        # Örn: fruit_vegetables_veri2_v1/best.pt -> fruit_vegetables_veri2_v1
-        label = str(rel.parent) if str(rel.parent) != "." else pt_path.stem
-        found[label] = pt_path.resolve()
-
+        if pt_path.is_file():
+            rel = pt_path.relative_to(models_dir)
+            label = str(rel.parent) if str(rel.parent) != "." else pt_path.stem
+            found[label] = pt_path.resolve()
     return found
 
 
-def init_gpu() -> tuple[int, str]:
-    if not torch.cuda.is_available():
-        raise RuntimeError("CUDA GPU bulunamadı! GPU aktif bir ortam gerekli.")
-    torch.backends.cudnn.benchmark = True
-    device_id = 0
-    gpu_name = torch.cuda.get_device_name(device_id)
-    return device_id, f"{gpu_name} (cuda:0)"
-
-
-DEVICE_ID, GPU_LABEL = init_gpu()
-AVAILABLE_MODELS: dict[str, Path] = discover_models(MODELS_DIR)
+AVAILABLE_MODELS = discover_models(MODELS_DIR)
 LOADED_MODELS: dict[str, YOLO] = {}
+DEFAULT_MODEL_NAME = (
+    "fruit_vegetables_veri2_v1"
+    if "fruit_vegetables_veri2_v1" in AVAILABLE_MODELS
+    else next(iter(AVAILABLE_MODELS), "")
+)
 
 
 def get_model(model_key: str | None) -> tuple[str, YOLO]:
-    """İstenen modeli belleğe alır (önbellekli) ve döndürür."""
+    """Load and cache a selected model on the best available device."""
     current_registry = discover_models(MODELS_DIR)
     if not current_registry:
-        raise FileNotFoundError(f"'{MODELS_DIR}' altında hiç best.pt modeli bulunamadı.")
+        raise FileNotFoundError(
+            f"Model ağırlığı bulunamadı. best.pt dosyasını '{MODELS_DIR}' altına ekleyin."
+        )
 
-    selected_key = model_key if model_key in current_registry else None
-    if selected_key is None:
-        preferred = "fruit_vegetables_veri2_v1"
-        selected_key = preferred if preferred in current_registry else next(iter(current_registry.keys()))
-
-    pt_path = current_registry[selected_key]
+    selected_key = model_key if model_key in current_registry else DEFAULT_MODEL_NAME
+    if selected_key not in current_registry:
+        selected_key = next(iter(current_registry))
 
     if selected_key not in LOADED_MODELS:
-        model = YOLO(str(pt_path))
-        model.to(f"cuda:{DEVICE_ID}")
-        dummy = np.zeros((IMGSZ, IMGSZ, 3), dtype=np.uint8)
-        model.predict(source=dummy, imgsz=IMGSZ, device=DEVICE_ID, verbose=False)
+        model = YOLO(str(current_registry[selected_key]))
+        model.to(DEVICE)
         LOADED_MODELS[selected_key] = model
-
     return selected_key, LOADED_MODELS[selected_key]
-
-
-# Başlangıçta varsayılan modeli ısıt
-DEFAULT_MODEL_NAME, _ = get_model("fruit_vegetables_veri2_v1")
 
 
 @app.route("/")
 def index():
-    model_names = list(discover_models(MODELS_DIR).keys())
-    active_name = DEFAULT_MODEL_NAME if DEFAULT_MODEL_NAME in model_names else (model_names[0] if model_names else "")
+    model_names = list(discover_models(MODELS_DIR))
+    active_name = DEFAULT_MODEL_NAME if DEFAULT_MODEL_NAME in model_names else ""
     return render_template(
         "index.html",
-        gpu_label=GPU_LABEL,
+        gpu_label=DEVICE_LABEL,
         default_conf=DEFAULT_CONF,
         model_names=model_names,
         active_model=active_name,
@@ -101,79 +88,77 @@ def index():
 def predict():
     if "image" not in request.files:
         return jsonify({"error": "Lütfen bir fotoğraf dosyası seçin."}), 400
-
     file = request.files["image"]
     if not file.filename:
         return jsonify({"error": "Dosya adı boş olamaz."}), 400
-
-    ext = Path(file.filename).suffix.lower()
-    if ext not in ALLOWED_EXTS:
+    if Path(file.filename).suffix.lower() not in ALLOWED_EXTS:
         return jsonify({"error": "Desteklenmeyen format. JPG, PNG veya WEBP yükleyin."}), 400
 
     try:
         conf = float(request.form.get("conf", DEFAULT_CONF))
-    except ValueError:
+    except (TypeError, ValueError):
         conf = DEFAULT_CONF
     conf = max(0.05, min(0.95, conf))
-
     requested_model = request.form.get("model_name", "").strip() or None
 
     try:
         used_model_name, model = get_model(requested_model)
     except FileNotFoundError as exc:
-        return jsonify({"error": str(exc)}), 404
+        return jsonify({"error": str(exc)}), 503
 
     raw_bytes = np.frombuffer(file.read(), dtype=np.uint8)
     frame_bgr = cv2.imdecode(raw_bytes, cv2.IMREAD_COLOR)
     if frame_bgr is None:
         return jsonify({"error": "Görsel okunamadı veya bozuk."}), 400
 
-    t0 = time.perf_counter()
+    start = time.perf_counter()
     results = model.predict(
         source=frame_bgr,
         conf=conf,
         imgsz=IMGSZ,
-        device=DEVICE_ID,
+        device=DEVICE,
         verbose=False,
     )
-    elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+    elapsed_ms = round((time.perf_counter() - start) * 1000.0, 1)
 
-    res = results[0]
-    annotated_bgr = res.plot()
-
-    ok_enc, buf = cv2.imencode(".jpg", annotated_bgr, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+    result = results[0]
+    annotated_bgr = result.plot()
+    ok_enc, buffer = cv2.imencode(
+        ".jpg", annotated_bgr, [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+    )
     if not ok_enc:
         return jsonify({"error": "Çıktı görseli encode edilemedi."}), 500
 
-    img_b64 = base64.b64encode(buf.tobytes()).decode("ascii")
+    image_b64 = base64.b64encode(buffer.tobytes()).decode("ascii")
+    class_names = model.names
+    counts = {name: 0 for name in class_names.values()}
+    detections = []
+    if result.boxes is not None:
+        for index, box in enumerate(result.boxes, start=1):
+            class_id = int(box.cls[0].item())
+            class_name = class_names.get(class_id, str(class_id))
+            confidence = round(float(box.conf[0].item()) * 100.0, 1)
+            counts[class_name] = counts.get(class_name, 0) + 1
+            detections.append(
+                {"id": index, "class_name": class_name, "confidence": confidence}
+            )
 
-    counts: dict[str, int] = {name: 0 for name in model.names.values()}
-    detections: list[dict] = []
-
-    if res.boxes is not None and len(res.boxes) > 0:
-        for idx, box in enumerate(res.boxes, start=1):
-            cls_id = int(box.cls[0].item())
-            cls_name = model.names.get(cls_id, str(cls_id))
-            score = round(float(box.conf[0].item()) * 100.0, 1)
-            counts[cls_name] = counts.get(cls_name, 0) + 1
-            detections.append({
-                "id": idx,
-                "class_name": cls_name,
-                "confidence": score,
-            })
-
-    total_items = sum(counts.values())
-
-    return jsonify({
-        "image_base64": f"data:image/jpeg;base64,{img_b64}",
-        "counts": counts,
-        "total_items": total_items,
-        "detections": detections,
-        "elapsed_ms": elapsed_ms,
-        "conf_used": conf,
-        "model_used": used_model_name,
-    })
+    return jsonify(
+        {
+            "image_base64": f"data:image/jpeg;base64,{image_b64}",
+            "counts": counts,
+            "total_items": sum(counts.values()),
+            "detections": detections,
+            "elapsed_ms": elapsed_ms,
+            "conf_used": conf,
+            "model_used": used_model_name,
+        }
+    )
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(
+        host=os.environ.get("HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "5000")),
+        debug=False,
+    )
