@@ -25,7 +25,7 @@ Bu son süre bütün test işi içindir; tek görüntünün tahmin süresi bilgi
 | Flask uygulaması | [`web_flask/`](web_flask/) |
 | Test JSON sonuçları | [`test_sonuclari_json/`](test_sonuclari_json/) |
 | Uygulama fotoğrafları | [`Uygulama_test_icin_fotolar/`](Uygulama_test_icin_fotolar/) |
-| Deney grafiklerı | [`docs/figures/`](docs/figures/) |
+| Deney grafikleri | [`docs/figures/`](docs/figures/) |
 | Veri birleştirme ve etiket eşleme | `data_merged.py`, `merge_dataset_v33.py` |
 | Veri bölme ve kontrol | `split.py`, `kontrol.py` |
 | Kişisel test değerlendirmesi | `kendi_verim_test.py` |
@@ -46,7 +46,7 @@ Bu son süre bütün test işi içindir; tek görüntünün tahmin süresi bilgi
 | Metrikler | Precision, Recall, F1, IoU, mAP@50 ve mAP@50–95 |
 | Eğitim ortamı | EVREN platformu; Slurm + Apptainer, NVIDIA H200, CUDA 12.4, Python 3.10.12, Ultralytics 8.3.0 |
 | Deployment | Flask; fotoğraf yükleme, model seçimi, confidence ayarı ve canlı kamera testi |
-| Beş gerçek fotoğraf | `Uygulama_test_icin_fotolar/`; raporda gerçek etiket ve model çıktısı tablosu bulunur |
+| Beş gerçek fotoğraf | `Uygulama_test_icin_fotolar/`; raporda gerçek etiket ve model çıktısı tablosu için kayıt alanı bulunur |
 | Repository | [GitHub deposu](https://github.com/Yusuf5825/Fruit_Vegtetables_Detect) |
 
 ## EVREN üzerinde eğitim ve açık kaynak paylaşımı
