@@ -28,7 +28,7 @@ Bu son süre bütün test işi içindir; tek görüntünün tahmin süresi bilgi
 | Deney grafikleri | [`docs/figures/`](docs/figures/) |
 | Veri birleştirme ve etiket eşleme | `data_merged.py`, `merge_dataset_v33.py` |
 | Veri bölme ve kontrol | `split.py`, `kontrol.py` |
-| Kişisel test değerlendirmesi | `kendi_verim_test.py` |
+| Kişisel test değerlendirmesi | `kendi_verim_test.py` |\n| Confusion matrix üretimi | `confusion_matrix.py` |
 | Kamera ile veri toplama | `kamera_app.py`, `otonom_foto.py` |
 | Model kayıtları | [`models/README.md`](models/README.md) |
 
@@ -128,7 +128,7 @@ Gerçek bir confusion matrix oluşturmak için aynı test görüntülerindeki he
 
 ![Confusion matrix veri durumu](docs/figures/confusion_matrix_durumu.png)
 
-Gerçek confusion matrix için `kendi_verim_test.py` içine her tahminin `true_class`, `predicted_class` ve IoU eşleşmesini kaydeden bir çıktı eklenmelidir.
+Gerçek confusion matrix için `confusion_matrix.py` kullanılabilir. Önce test betiği her tahmin için `true_class` ve `predicted_class` çiftlerini JSON olarak kaydetmeli, ardından `python confusion_matrix.py --input pairs.json --output confusion_matrix.png` çalıştırılmalıdır.
 
 ## Flask uygulaması ve canlı kamera testi
 
