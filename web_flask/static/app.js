@@ -31,11 +31,17 @@ const classCardsEl = document.getElementById("classCards");
 const detStreamEl = document.getElementById("detStream");
 const detBadgeEl = document.getElementById("detBadge");
 const resetBtn = document.getElementById("resetBtn");
+const cameraStartBtn = document.getElementById("cameraStartBtn");
+const cameraStopBtn = document.getElementById("cameraStopBtn");
+const cameraVideo = document.getElementById("cameraVideo");
+const cameraCanvas = document.getElementById("cameraCanvas");
 
 let selectedFile = null;
 let originalDataUrl = null;
 let annotatedDataUrl = null;
 let activeViewMode = "annotated";
+let cameraStream = null;
+let cameraTimer = null;
 
 function showError(msg) {
   alertBanner.textContent = msg;
@@ -125,6 +131,50 @@ function setLoading(isLoading) {
   btnSpinner.hidden = !isLoading;
   btnText.textContent = isLoading ? "GPU Analiz Yapıyor..." : "Analizi Başlat";
   stageBox.classList.toggle("scanning", isLoading);
+}
+
+
+async function startCamera() {
+  clearError();
+  if (!navigator.mediaDevices?.getUserMedia) {
+    showError("Bu tarayıcı kamera erişimini desteklemiyor.");
+    return;
+  }
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    cameraVideo.srcObject = cameraStream;
+    cameraVideo.hidden = false;
+    cameraStartBtn.disabled = true;
+    cameraStopBtn.disabled = false;
+    heroSubEl.textContent = "Canlı kamera açık";
+    cameraTimer = window.setInterval(captureCameraFrame, 1800);
+  } catch (err) {
+    showError(`Kamera açılamadı: ${err.message}`);
+  }
+}
+
+function stopCamera() {
+  if (cameraTimer) window.clearInterval(cameraTimer);
+  cameraTimer = null;
+  if (cameraStream) cameraStream.getTracks().forEach((track) => track.stop());
+  cameraStream = null;
+  cameraVideo.srcObject = null;
+  cameraVideo.hidden = true;
+  cameraStartBtn.disabled = false;
+  cameraStopBtn.disabled = true;
+}
+
+function captureCameraFrame() {
+  if (!cameraStream || !cameraVideo.videoWidth) return;
+  cameraCanvas.width = cameraVideo.videoWidth;
+  cameraCanvas.height = cameraVideo.videoHeight;
+  const ctx = cameraCanvas.getContext("2d");
+  ctx.drawImage(cameraVideo, 0, 0);
+  cameraCanvas.toBlob((blob) => {
+    if (!blob) return;
+    selectedFile = new File([blob], "camera_frame.jpg", { type: "image/jpeg" });
+    runPrediction();
+  }, "image/jpeg", 0.86);
 }
 
 async function runPrediction() {
@@ -250,8 +300,11 @@ switchButtons.forEach((btn) => {
 });
 
 predictBtn.addEventListener("click", runPrediction);
+cameraStartBtn?.addEventListener("click", startCamera);
+cameraStopBtn?.addEventListener("click", stopCamera);
 
 resetBtn.addEventListener("click", () => {
+  stopCamera();
   clearError();
   selectedFile = null;
   originalDataUrl = null;
@@ -277,3 +330,4 @@ resetBtn.addEventListener("click", () => {
 });
 
 buildClassCards({}, 0);
+
