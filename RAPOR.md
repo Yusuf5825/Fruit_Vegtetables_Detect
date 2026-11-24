@@ -92,7 +92,7 @@ En yüksek F1 Tomato sınıfındadır. Potato ve Apple sınıfları daha düşü
 
 ### Confusion matrix
 
-Mevcut test JSON dosyalarında ham görüntü bazlı `gerçek sınıf → tahmin sınıfı` eşleşmeleri yoktur; yalnızca toplu metrikler ve eşleşen kutuların ortalama IoU değeri vardır. Bu nedenle gerçek bir confusion matrix uydurulmamıştır. Aşağıdaki görsel veri durumunu açıkça gösterir. Gerçek matrisi üretmek için test betiğinin her tahmini sınıf eşleşmesiyle birlikte kaydetmesi gerekir.
+Mevcut test JSON dosyalarında ham görüntü bazlı `gerçek sınıf → tahmin sınıfı` eşleşmeleri yoktur; yalnızca toplu metrikler ve eşleşen kutuların ortalama IoU değeri vardır. Bu nedenle gerçek bir confusion matrix uydurulmamıştır. Aşağıdaki görsel veri durumunu açıkça gösterir. Gerçek matrisi üretmek için test betiğinin her tahmini sınıf eşleşmesiyle birlikte kaydetmesi gerekir. Bu kayıt oluştuğunda repodaki `confusion_matrix.py` betiğiyle grafik üretilebilir.
 
 ![Confusion matrix veri durumu](docs/figures/confusion_matrix_durumu.png)
 
