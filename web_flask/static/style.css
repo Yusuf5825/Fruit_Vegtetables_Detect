@@ -776,3 +776,7 @@ input[type="range"] {
   border-color: var(--cyan);
 }
 
+
+
+.camera-tools { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.camera-tools video { width:220px; max-height:140px; object-fit:cover; border-radius:12px; border:1px solid rgba(148,163,184,.3); }
