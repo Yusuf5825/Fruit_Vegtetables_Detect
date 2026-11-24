@@ -66,6 +66,13 @@
         </div>
       </div>
 
+      <div class="camera-tools" aria-label="Canlı kamera testi">
+        <button type="button" class="ghost-btn" id="cameraStartBtn">Canlı Kamerayı Aç</button>
+        <button type="button" class="ghost-btn" id="cameraStopBtn" disabled>Kamerayı Kapat</button>
+        <video id="cameraVideo" autoplay playsinline muted hidden></video>
+        <canvas id="cameraCanvas" hidden></canvas>
+      </div>
+
       <div class="deck-actions">
         <div class="slider-card">
           <div class="slider-header">
