@@ -1,0 +1,74 @@
+[
+  {
+    "model_name": "fruit_vegetables_veri2_v1",
+    "json_file": "fruit_vegetables_veri2_v1_test_sonuc.json",
+    "overall_metrics": {
+      "mAP50": 0.8677,
+      "mAP50_95": 0.5484,
+      "precision": 0.9173,
+      "recall": 0.8816,
+      "f1": 0.8967,
+      "mean_matched_iou": 0.7651
+    }
+  },
+  {
+    "model_name": "fruit_vegetables_veri3_v1",
+    "json_file": "fruit_vegetables_veri3_v1_test_sonuc.json",
+    "overall_metrics": {
+      "mAP50": 0.7567,
+      "mAP50_95": 0.4642,
+      "precision": 0.9311,
+      "recall": 0.776,
+      "f1": 0.8369,
+      "mean_matched_iou": 0.6993
+    }
+  },
+  {
+    "model_name": "fruit_vegetables_veri4_v1",
+    "json_file": "fruit_vegetables_veri4_v1_test_sonuc.json",
+    "overall_metrics": {
+      "mAP50": 0.793,
+      "mAP50_95": 0.4764,
+      "precision": 0.9033,
+      "recall": 0.8149,
+      "f1": 0.8442,
+      "mean_matched_iou": 0.7231
+    }
+  },
+  {
+    "model_name": "fruit_vegetables_veri4_v2",
+    "json_file": "fruit_vegetables_veri4_v2_test_sonuc.json",
+    "overall_metrics": {
+      "mAP50": 0.8447,
+      "mAP50_95": 0.5203,
+      "precision": 0.9207,
+      "recall": 0.8615,
+      "f1": 0.8878,
+      "mean_matched_iou": 0.7522
+    }
+  },
+  {
+    "model_name": "fruit_vegetables_veri4_v3",
+    "json_file": "fruit_vegetables_veri4_v3_test_sonuc.json",
+    "overall_metrics": {
+      "mAP50": 0.8417,
+      "mAP50_95": 0.5256,
+      "precision": 0.9186,
+      "recall": 0.8552,
+      "f1": 0.8851,
+      "mean_matched_iou": 0.7448
+    }
+  },
+  {
+    "model_name": "fruits_vegetables_v4",
+    "json_file": "fruits_vegetables_v4_test_sonuc.json",
+    "overall_metrics": {
+      "mAP50": 0.8441,
+      "mAP50_95": 0.5004,
+      "precision": 0.8907,
+      "recall": 0.8582,
+      "f1": 0.8657,
+      "mean_matched_iou": 0.7483
+    }
+  }
+]

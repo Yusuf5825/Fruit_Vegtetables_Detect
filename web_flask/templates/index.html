@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meyve &amp; Sebze Analiz Stüdyosu | YOLOv11</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3a6 6 0 0 0-6 6c0 4.5 6 12 6 12s6-7.5 6-12a6 6 0 0 0-6-6Z" />
+            <circle cx="12" cy="9" r="2" />
+          </svg>
+        </div>
+        <div>
+          <span class="eyebrow">REAL-TIME VISION ENGINE</span>
+          <h1>Meyve &amp; Sebze Tespit ve Sayım Paneli</h1>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="model-picker">
+          <label for="modelSelect">Model:</label>
+          <select id="modelSelect">
+            {% for m in model_names %}
+              <option value="{{ m }}" {% if m == active_model %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="chip gpu-chip">
+          <span class="pulse-dot"></span>
+          <span>{{ gpu_label }}</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="control-deck" data-default-conf="{{ default_conf }}">
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Fotoğraf yükle veya sürükle">
+        <input type="file" id="fileInput" accept="image/*" hidden />
+        <div class="dropzone-content">
+          <div class="upload-ring" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          </div>
+          <div>
+            <p class="drop-title">Fotoğrafı buraya sürükle veya <span>dosya seç</span></p>
+            <p class="drop-sub" id="fileMeta">JPG, PNG, WEBP desteklenir • Henüz görsel seçilmedi</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="deck-actions">
+        <div class="slider-card">
+          <div class="slider-header">
+            <label for="confSlider">Güven Eşiği (Confidence)</label>
+            <span class="mono-val" id="confValue">{{ "%.2f"|format(default_conf) }}</span>
+          </div>
+          <div class="range-wrap">
+            <input
+              type="range"
+              id="confSlider"
+              min="0.10"
+              max="0.90"
+              step="0.05"
+              value="{{ default_conf }}"
+            />
+            <div class="range-ticks">
+              <span>0.10</span>
+              <span>0.35</span>
+              <span>0.65</span>
+              <span>0.90</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="predictBtn" disabled>
+          <span class="btn-spinner" id="btnSpinner" hidden></span>
+          <span id="btnText">Analizi Başlat</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="alert-banner" id="alertBanner" role="alert" hidden></div>
+
+    <main class="workspace">
+      <section class="panel stage-panel">
+        <div class="panel-head">
+          <div class="panel-title-group">
+            <h2>Görsel Analiz Ekranı</h2>
+            <div class="view-switch" id="viewSwitch" hidden>
+              <button type="button" class="switch-btn active" data-mode="annotated">Kutulu Sonuç</button>
+              <button type="button" class="switch-btn" data-mode="original">Orijinal Kare</button>
+            </div>
+          </div>
+          <div class="telemetry-pills">
+            <span class="pill" id="modelPill">Model: {{ active_model or "—" }}</span>
+            <span class="pill" id="speedPill">GPU Süre: —</span>
+            <span class="pill pill-accent" id="confPill">Eşik: {{ "%.2f"|format(default_conf) }}</span>
+          </div>
+        </div>
+
+        <div class="stage-box" id="stageBox">
+          <div class="scan-line" id="scanLine" aria-hidden="true"></div>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-badge">5 SINIF HAZIR</div>
+            <h3>Analiz için bir fotoğraf yükleyin</h3>
+            <p>Apple, Lemon, Potato, Tomato ve Carrot nesneleri tespit edilip sınırlayıcı kutularla işaretlenir.</p>
+          </div>
+          <img id="stageImg" alt="Analiz görseli" hidden />
+        </div>
+      </section>
+
+      <aside class="panel sidebar-panel">
+        <div class="panel-head">
+          <h2>Sınıf Dağılımı</h2>
+          <button type="button" class="ghost-btn" id="resetBtn" title="Ekranı temizle">Sıfırla</button>
+        </div>
+
+        <div class="hero-stat">
+          <div>
+            <span class="hero-label">Toplam Tespit Edilen Nesne</span>
+            <span class="hero-sub" id="heroSub">Görsel bekleniyor</span>
+          </div>
+          <div class="hero-num" id="totalCount">0</div>
+        </div>
+
+        <div class="class-cards" id="classCards"></div>
+
+        <div class="detections-section">
+          <div class="det-header">
+            <h3>Tespit Edilen Nesneler</h3>
+            <span class="mono-val small" id="detBadge">0 kutu</span>
+          </div>
+          <div class="det-stream" id="detStream">
+            <div class="det-empty">Tespit yapıldığında nesneler ve güven yüzdeleri burada listelenir.</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

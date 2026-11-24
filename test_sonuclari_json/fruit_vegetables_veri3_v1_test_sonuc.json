@@ -1,0 +1,68 @@
+{
+  "model_name": "fruit_vegetables_veri3_v1",
+  "weights_path": "C:\\Projeler\\Fruits_detect\\models\\fruit_vegetables_veri3_v1\\best.pt",
+  "evaluated_at": "2026-11-24T23:54:09",
+  "evaluation_sec": 75.85,
+  "settings": {
+    "device": "cuda:0",
+    "imgsz": 640,
+    "conf": 0.25,
+    "iou": 0.5,
+    "test_dataset": "C:\\Projeler\\Fruits_detect\\kendi_test_verim"
+  },
+  "overall_metrics": {
+    "mAP50": 0.7567,
+    "mAP50_95": 0.4642,
+    "precision": 0.9311,
+    "recall": 0.776,
+    "f1": 0.8369,
+    "mean_matched_iou": 0.6993
+  },
+  "per_class_metrics": {
+    "Apple": {
+      "class_id": 0,
+      "mAP50": 0.5919,
+      "mAP50_95": 0.3605,
+      "precision": 0.9259,
+      "recall": 0.5981,
+      "f1": 0.7267,
+      "mean_matched_iou": 0.5561
+    },
+    "Lemon": {
+      "class_id": 1,
+      "mAP50": 0.8055,
+      "mAP50_95": 0.3981,
+      "precision": 0.8265,
+      "recall": 0.8873,
+      "f1": 0.8558,
+      "mean_matched_iou": 0.6786
+    },
+    "Potato": {
+      "class_id": 2,
+      "mAP50": 0.6442,
+      "mAP50_95": 0.4419,
+      "precision": 0.9785,
+      "recall": 0.65,
+      "f1": 0.7811,
+      "mean_matched_iou": 0.7829
+    },
+    "Tomato": {
+      "class_id": 3,
+      "mAP50": 0.9777,
+      "mAP50_95": 0.6472,
+      "precision": 0.9438,
+      "recall": 0.9825,
+      "f1": 0.9628,
+      "mean_matched_iou": 0.8185
+    },
+    "Carrot": {
+      "class_id": 4,
+      "mAP50": 0.7641,
+      "mAP50_95": 0.4732,
+      "precision": 0.9809,
+      "recall": 0.7624,
+      "f1": 0.8579,
+      "mean_matched_iou": 0.7095
+    }
+  }
+}

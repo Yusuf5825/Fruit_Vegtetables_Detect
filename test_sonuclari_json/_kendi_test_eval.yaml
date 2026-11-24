@@ -1,0 +1,11 @@
+path: C:\Projeler\Fruits_detect\kendi_test_verim
+train: images/test
+val: images/test
+test: images/test
+nc: 5
+names:
+  0: Apple
+  1: Lemon
+  2: Potato
+  3: Tomato
+  4: Carrot
