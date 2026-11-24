@@ -157,7 +157,7 @@ Kamera için tarayıcı izni gerekir. Uygulama GPU varsa CUDA'yı, yoksa CPU'yu 
 
 ### Model ağırlıklarının otomatik hazırlanması
 
-En iyi modelin ikili ağırlığı GitHub dosya boyutu sınırı nedeniyle `models/fruit_vegetables_veri2_v1/parts/` altında parçalı olarak tutulur. Flask başlangıçta parçaları `.model_cache/fruit_vegetables_veri2_v1/best.pt` dosyasına otomatik birleştirir. Bu işlem kullanıcıdan ayrıca model indirmesini istemez.
+Model ağırlıkları yaklaşık 40–50 MB boyutundaki ikili dosyalardır. GitHub içerik arayüzü bu çalışma ortamından güvenilir bir ikili aktarım sağlamadığı için ağırlıkların kanonik açık kaynak kopyası EVREN proje sayfasında tutulur. `fruit_vegetables_veri2_v1/best.pt` dosyasını EVREN’den indirip `models/fruit_vegetables_veri2_v1/best.pt` konumuna koyduğunuzda Flask otomatik olarak keşfeder.
 
 Diğer deney ağırlıkları EVREN proje sayfasındaki açık model kayıtlarında listelenmiştir. İsterseniz `models/<model_adı>/best.pt` konumuna koyarak arayüzde seçebilirsiniz.
 
