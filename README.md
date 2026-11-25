@@ -28,7 +28,8 @@ Bu son süre bütün test işi içindir; tek görüntünün tahmin süresi bilgi
 | Deney grafikleri | [`docs/figures/`](docs/figures/) |
 | Veri birleştirme ve etiket eşleme | `data_merged.py`, `merge_dataset_v33.py` |
 | Veri bölme ve kontrol | `split.py`, `kontrol.py` |
-| Kişisel test değerlendirmesi | `kendi_verim_test.py` |\n| Confusion matrix üretimi | `confusion_matrix.py` |
+| Kişisel test değerlendirmesi | `kendi_verim_test.py` 
+| Confusion matrix üretimi | `confusion_matrix.py` |
 | Kamera ile veri toplama | `kamera_app.py`, `otonom_foto.py` |
 | Model kayıtları | [`models/README.md`](models/README.md) |
 
