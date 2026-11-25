@@ -50,7 +50,23 @@ YOLO detection loss; kutu regresyonu, sınıflandırma ve Distribution Focal Los
 
 ## 5. Eğitim ortamı ve deneyler
 
-Eğitimlerin tamamı EVREN platformunda yürütülmüştür. Manifestlerde Python 3.10.12, CUDA 12.4, Ultralytics 8.3.0 ve NVIDIA H200 bilgileri kayıtlıdır. Dağıtık deneylerde GPU sayısı 1, 2, 4, 6 veya 8 olarak değişmiştir. Eğitim toplam süresi manifestlerde bulunmadığı için rapora doğrulanmamış süre eklenmemiştir.
+Eğitimlerin tamamı EVREN platformunda yürütülmüştür. Manifestlerde Python 3.10.12, CUDA 12.4, Ultralytics 8.3.0 ve NVIDIA H200 bilgileri kayıtlıdır. Dağıtık deneylerde GPU sayısı 1, 2, 4, 6 veya 8 olarak değişmiştir.
+
+Bu teslimde süre bilgileri yalnızca kullanılan en iyi `fruit_vegetables_veri2_v1` modeli için raporlanmıştır:
+
+| Süre / kaynak ölçümü | Veri2 v1 |
+|---|---:|
+| Eğitim süresi | **7 saat 30 dakika** |
+| Ortalama süre | **2 dakika 25 saniye** |
+| En hızlı süre | **2 dakika 13 saniye** |
+| En yavaş süre | **3 dakika 54 saniye** |
+| İşlenen görüntü | **3.1 milyon** |
+| Toplam hız | **122 görüntü/s** |
+| Peak VRAM | **30.5 GB** |
+| GPU kullanımı | **%90** |
+| Son learning rate | **7.37×10⁻⁴** |
+
+Uygulama testleri öğrencinin NVIDIA GeForce RTX 4060 Laptop GPU'sunda, `imgsz=640`, `confidence=0.35` ile çalıştırılmıştır. Beş çalıştırmanın GPU çıkarım süreleri 1,756.1–1,878.0 ms aralığında, ortalama **1,808.0 ms (1.81 s)** olarak ölçülmüştür. Eğitim ortamındaki H200 bilgisi eğitim altyapısını, RTX 4060 bilgisi ise uygulama çıkarım bilgisayarını ifade eder.
 
 | Deney | Mimari | Train / val / test | Epoch / patience | Batch / GPU sayısı |
 |---|---|---:|---:|---:|
@@ -126,17 +142,21 @@ Ardından `http://127.0.0.1:5000` açılır. Uygulama GPU varsa CUDA'yı, yoksa 
 
 Flask arayüzünde ayrıca **Canlı Kamerayı Aç** düğmesi vardır. Tarayıcı kamera izni verdikten sonra yaklaşık 1.8 saniyede bir kare `/api/predict` uç noktasına gönderilir ve güncel kutulu çıktı gösterilir. Kamera özelliği `localhost` veya HTTPS üzerinde çalışır.
 
-| Fotoğraf | Gerçek sonuç | Model sonucu | Değerlendirme |
-|---|---|---|---|
-| 1 | Uygulama çıktısından doldurulacak | Uygulama çıktısından doldurulacak | Başarılı / başarısız nedeni |
-| 2 | Uygulama çıktısından doldurulacak | Uygulama çıktısından doldurulacak | Başarılı / başarısız nedeni |
-| 3 | Uygulama çıktısından doldurulacak | Uygulama çıktısından doldurulacak | Başarılı / başarısız nedeni |
-| 4 | Uygulama çıktısından doldurulacak | Uygulama çıktısından doldurulacak | Başarılı / başarısız nedeni |
-| 5 | Uygulama çıktısından doldurulacak | Uygulama çıktısından doldurulacak | Başarılı / başarısız nedeni |
+| Uygulama çalıştırması | Fotoğrafta görülen gerçek nesneler | `fruit_vegetables_veri2_v1` çıktısı | GPU süresi | Değerlendirme |
+|---|---|---|---:|---|
+| `00.44.17 (1).jpeg` | 1 Potato, 1 Carrot | Potato 0.84; Carrot 0.88 | 1,834.5 ms | **2/2 doğru** |
+| `00.44.17.jpeg` – elma karesi | 3 Apple | Apple 0.86, 0.85, 0.80 | 1,756.1 ms | **3/3 doğru** |
+| `00.44.17.jpeg` – karışık kare | 3 Apple, 2 Lemon; arka planda Potato | Apple 0.86, 0.85, 0.84; Lemon 0.78, 0.69 | 1,801.5 ms | 5 tespit doğru; arka plan Potato eşik altında kalmış olabilir |
+| `00.53.31.jpeg` | 1 Apple, 1 Carrot | Apple 0.79; Carrot 0.77 | 1,770.1 ms | **2/2 doğru** |
+| `00.53.32 (2).jpeg` | 2 Apple, 2 Potato | Potato 0.91, 0.42; Apple 0.74, 0.66 | 1,878.0 ms | **4/4 doğru** |
+
+Beş çalıştırmanın ortalama çıkarım süresi **1,808.0 ms**'dir. Aynı WhatsApp dosya adının iki farklı ekran görüntüsünde görünmesi iki farklı uygulama çalıştırmasının ayrı ayrı raporlanması içindir. Gerçek nesne adetleri fotoğraflar ekranda incelenerek elle belirlenmiş, model çıktıları uygulama ekranından okunmuştur. Bu nedenle tablo saha testi karşılaştırmasıdır; piksel düzeyinde gerçek kutu anotasyonu yerine geçmez.
+
+Özellikle 0.42 güven skoruyla gelen Potato ve arka planda kalan nesne, confidence eşiğinin sonuçlara etkisini göstermektedir. Işık, nesne boyutu, örtüşme ve arka plan karmaşası düşük güvenli veya eksik tespitlerin olası nedenleridir.
 
 ## 9. Sonuç
 
-YOLO11 tabanlı sistem, beş sınıflı meyve-sebze nesne tespiti görevinde en iyi model için mAP@50=0.8677 ve F1=0.8967 değerlerine ulaşmıştır. Model deneyleri EVREN üzerinde izlenebilir şekilde eğitilmiş, test sonuçları JSON olarak kaydedilmiş ve Flask uygulamasıyla kullanılabilir hale getirilmiştir. Son teslimde beş fotoğrafın gerçek etiket/tahmin tablosu uygulama çıktılarıyla doldurulmalıdır. Ham tahminler kaydedildiğinde confusion matrix de doğrudan üretilebilir.
+YOLO11 tabanlı sistem, beş sınıflı meyve-sebze nesne tespiti görevinde en iyi `fruit_vegetables_veri2_v1` modeliyle mAP@50=0.8677 ve F1=0.8967 değerlerine ulaşmıştır. Model EVREN üzerinde eğitilmiş, veri ve modeller açık kaynak olarak paylaşılmış, test sonuçları JSON olarak kaydedilmiş ve Flask uygulamasıyla kullanılabilir hale getirilmiştir. Beş gerçek uygulama çalıştırmasında ortalama çıkarım süresi 1.81 saniyedir. Uygulama sonuçları tabloya işlenmiş; düşük güvenli ve arka planda kalan nesneler ayrıca yorumlanmıştır.
 
 ## 10. Kaynaklar
 
