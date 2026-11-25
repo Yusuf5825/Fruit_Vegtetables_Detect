@@ -31,6 +31,27 @@ Ultralytics YOLO11 nesne tespit mimarisi kullanılmıştır. Deneylerin çoğund
 - **Sınıf sayısı:** 5
 - **Çıktı:** Sınırlayıcı kutu, sınıf ve güven skoru
 
+### Rapor şablonu özeti
+
+| Alan | Proje karşılığı |
+|---|---|
+| Project Title | Meyve ve Sebze Tespiti ve Sayımı |
+| Problem / Task | Beş sınıflı YOLO11 nesne tespiti ve nesne sayımı |
+| Dataset / URL | EVREN üzerinde açık kaynak meyve-sebze veri kümeleri; [proje bağlantısı](https://evren.ssyz.org.tr/projects/01a1ffce-5161-7701-a3ac-c0b9d7102188) |
+| Model Architecture | Ultralytics YOLO11l detection modeli |
+| Input Size | Eğitim 800×800, uygulama çıkarımı 640×640 |
+| Hyperparameters | `lr0=0.001`, `lrf=0.01`, 200 epoch, patience 50, batch 32, weight decay 0.0005, AMP açık, augmentasyonlar |
+| Optimizer | AdamW |
+| Activation / Output Function | Detection head sınıf olasılıkları için sigmoid ve kutu koordinatlarını üretir; çoklu nesne nedeniyle tek softmax kullanılmaz |
+| Loss Function | Kutu regresyonu + sınıflandırma + Distribution Focal Loss; `box=7.5`, `cls=0.5`, `dfl=1.5` |
+| Evaluation Metrics | Precision, Recall, F1, IoU, mAP@50, mAP@50–95 |
+| Training Environment | EVREN Slurm/Apptainer HPC, NVIDIA H200, CUDA 12.4, Python 3.10.12, Ultralytics 8.3.0 |
+| Best Performance | Veri2 v1: mAP@50 0.8677, mAP@50–95 0.5484, F1 0.8967 |
+| Inference Time | Beş uygulama çalıştırması ortalaması 1,808.0 ms; aralık 1,756.1–1,878.0 ms |
+| Deployment Technology | Flask + HTML/CSS/JavaScript; fotoğraf, kamera, confidence ayarı ve adet paneli |
+| Repository | [GitHub deposu](https://github.com/Yusuf5825/Fruit_Vegtetables_Detect) |
+
+
 ## 4. Hiperparametreler ve seçim gerekçeleri
 
 | Parametre | Kullanılan değerler | Gerekçe |
