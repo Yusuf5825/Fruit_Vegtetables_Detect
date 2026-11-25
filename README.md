@@ -193,6 +193,18 @@ Diğer deneylerin ayrıntıları ve açık model kayıtları EVREN proje sayfas�
 
 Beş çalıştırmanın ortalama çıkarım süresi **1,808.0 ms**'dir. Aynı WhatsApp dosya adının iki farklı uygulama ekranında görünmesi nedeniyle iki ayrı çalıştırma ayrıca raporlanmıştır. Değerlendirme, ekrandaki nesnelerin elle gözlemlenen sınıf/adet bilgisi ile yapılmıştır; gerçek kutu anotasyonu bulunmadığı için bu sonuçlar saha testi niteliğindedir. Düşük güvenli Potato (0.42) ve arka planda kalan nesneler, confidence eşiğinin tespit sayısını nasıl etkilediğini göstermektedir.
 
+### Uygulama test kanıtları
+
+| Kanıt | Görsel |
+|---|---|
+| Potato + Carrot | ![Potato ve Carrot uygulama testi](docs/figures/app_test_01_potato_carrot.png) |
+| Üç Apple | ![Apple uygulama testi](docs/figures/app_test_02_apples.png) |
+| Apple + Lemon karışık kare | ![Apple ve Lemon uygulama testi](docs/figures/app_test_03_apples_lemons.png) |
+| Apple + Carrot | ![Apple ve Carrot uygulama testi](docs/figures/app_test_04_apple_carrot.png) |
+| Apple + Potato | ![Apple ve Potato uygulama testi](docs/figures/app_test_05_apples_potatoes.png) |
+
+Eğitim ekranındaki doğrulanmış veri2 v1 süre ve kaynak ölçümleri: ![veri2 v1 eğitim metrikleri](docs/figures/veri2_training_metrics.png).
+
 Işık, nesne boyutu, örtüşme ve arka plan karmaşası başarısız veya düşük güvenli tespitlerin temel nedenleridir.
 
 ## Sınırlılıklar ve sonraki adım
