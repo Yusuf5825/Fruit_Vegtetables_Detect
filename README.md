@@ -186,7 +186,7 @@ Kamera için tarayıcı izni gerekir. Uygulama GPU varsa CUDA'yı, yoksa CPU'yu 
 
 ### Model ağırlıklarının otomatik hazırlanması
 
-Teslimin ana ağırlığı **fruit_vegetables_veri2_v1** modelidir. GitHub dosya boyutu sınırı nedeniyle `best.pt` dosyası repoda `models/fruit_vegetables_veri2_v1/parts/` altında parçalara ayrılmış olarak tutulur. Flask uygulaması ilk açılışta bu parçaları otomatik birleştirip `.model_cache/fruit_vegetables_veri2_v1/best.pt` dosyasını oluşturur; öğrencinin ayrıca model indirmesi gerekmez. İsterseniz tek dosya kullanımı için ağırlığı `models/fruit_vegetables_veri2_v1/best.pt` olarak da koyabilirsiniz.
+Teslimin ana ağırlığı **fruit_vegetables_veri2_v1** modelidir. tek dosyalı aktarım sınırı nedeniyle `best.pt` dosyası repoda `models/fruit_vegetables_veri2_v1/parts/` altında parçalara ayrılmış olarak tutulur. Flask uygulaması ilk açılışta bu parçaları otomatik birleştirip `.model_cache/fruit_vegetables_veri2_v1/best.pt` dosyasını oluşturur; öğrencinin ayrıca model indirmesi gerekmez. İsterseniz tek dosya kullanımı için ağırlığı `models/fruit_vegetables_veri2_v1/best.pt` olarak da koyabilirsiniz.
 
 Diğer deneylerin ayrıntıları ve açık model kayıtları EVREN proje sayfasında yer alır. Canlı uygulama varsayılan olarak veri2 v1 modelini seçer.
 
