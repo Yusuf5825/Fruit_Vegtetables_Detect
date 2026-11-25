@@ -49,6 +49,24 @@ Bu son süre bütün test işi içindir; tek görüntünün tahmin süresi bilgi
 | Beş gerçek fotoğraf | `Uygulama_test_icin_fotolar/`; raporda gerçek etiket ve model çıktısı tablosu için kayıt alanı bulunur |
 | Repository | [GitHub deposu](https://github.com/Yusuf5825/Fruit_Vegtetables_Detect) |
 
+## En iyi model: eğitim ve çıkarım süreleri
+
+Bu teslimde süre bilgileri yalnızca **fruit_vegetables_veri2_v1** için raporlanmıştır. Eğitim ekranındaki kayıtlar:
+
+| Ölçüm | Veri2 v1 sonucu |
+|---|---:|
+| Eğitim süresi | **7 saat 30 dakika** |
+| Ortalama süre | **2 dakika 25 saniye** |
+| En hızlı süre | **2 dakika 13 saniye** |
+| En yavaş süre | **3 dakika 54 saniye** |
+| İşlenen görüntü | **3.1 milyon** |
+| Toplam hız | **122 görüntü/s** |
+| Peak VRAM | **30.5 GB** |
+| GPU kullanımı | **%90** |
+| Son öğrenme oranı | **7.37×10⁻⁴** |
+
+Uygulamanın NVIDIA GeForce RTX 4060 Laptop GPU üzerinde, `imgsz=640` ve `confidence=0.35` ayarlarıyla alınan beş gerçek görüntü çalıştırmasında çıkarım süreleri **1,756.1–1,878.0 ms**, ortalama **1,808.0 ms (1.81 s)** olarak ölçülmüştür. Bu süre tek görüntü içindir; ilk model yükleme süresi ayrıca değerlendirilmemiştir.
+
 ## EVREN üzerinde eğitim ve açık kaynak paylaşımı
 
 Bu projedeki bütün eğitimler **Savunma Sanayii Başkanlığı EVREN platformunda** gerçekleştirilmiştir. Eğitim işleri platformun Slurm ve Apptainer tabanlı HPC altyapısında yürütülmüş, deney ayarları ve model kayıtları tutulmuş, veri kümeleri ve eğitilmiş model ağırlıkları proje içinde açık kaynak olarak paylaşılmıştır.
@@ -157,30 +175,32 @@ Kamera için tarayıcı izni gerekir. Uygulama GPU varsa CUDA'yı, yoksa CPU'yu 
 
 ### Model ağırlıklarının otomatik hazırlanması
 
-Model ağırlıkları yaklaşık 40–50 MB boyutundaki ikili dosyalardır. GitHub içerik arayüzü bu çalışma ortamından güvenilir bir ikili aktarım sağlamadığı için ağırlıkların kanonik açık kaynak kopyası EVREN proje sayfasında tutulur. `fruit_vegetables_veri2_v1/best.pt` dosyasını EVREN’den indirip `models/fruit_vegetables_veri2_v1/best.pt` konumuna koyduğunuzda Flask otomatik olarak keşfeder.
+Teslimin ana ağırlığı **fruit_vegetables_veri2_v1** modelidir. GitHub dosya boyutu sınırı nedeniyle `best.pt` dosyası repoda `models/fruit_vegetables_veri2_v1/parts/` altında parçalara ayrılmış olarak tutulur. Flask uygulaması ilk açılışta bu parçaları otomatik birleştirip `.model_cache/fruit_vegetables_veri2_v1/best.pt` dosyasını oluşturur; öğrencinin ayrıca model indirmesi gerekmez. İsterseniz tek dosya kullanımı için ağırlığı `models/fruit_vegetables_veri2_v1/best.pt` olarak da koyabilirsiniz.
 
-Diğer deney ağırlıkları EVREN proje sayfasındaki açık model kayıtlarında listelenmiştir. İsterseniz `models/<model_adı>/best.pt` konumuna koyarak arayüzde seçebilirsiniz.
+Diğer deneylerin ayrıntıları ve açık model kayıtları EVREN proje sayfasında yer alır. Canlı uygulama varsayılan olarak veri2 v1 modelini seçer.
 
 ## Gerçek görüntülerle test ve değerlendirme
 
 Ödev yönergesindeki beş telefon fotoğrafı `Uygulama_test_icin_fotolar/` altında tutulur. Her fotoğraf için gerçek sınıf ve adet, model tahmini, doğru/eksik/fazla tespit ve anotasyonlu sonuç görseli raporda verilmelidir. Bu karşılaştırmanın güvenilir olması için fotoğraflar uygulamadan geçirildikten sonra aşağıdaki tablo tahmin çıktılarıyla doldurulmalıdır:
 
-| Fotoğraf | Gerçek etiket ve adet | Model tahmini | Doğru / eksik / fazla | Görsel çıktı |
-|---|---|---|---|---|
-| 1 | Uygulama testiyle doldurulacak | Uygulama testiyle doldurulacak | Yorumlanacak | Eklenecek |
-| 2 | Uygulama testiyle doldurulacak | Uygulama testiyle doldurulacak | Yorumlanacak | Eklenecek |
-| 3 | Uygulama testiyle doldurulacak | Uygulama testiyle doldurulacak | Yorumlanacak | Eklenecek |
-| 4 | Uygulama testiyle doldurulacak | Uygulama testiyle doldurulacak | Yorumlanacak | Eklenecek |
-| 5 | Uygulama testiyle doldurulacak | Uygulama testiyle doldurulacak | Yorumlanacak | Eklenecek |
+| Uygulama çalıştırması | Fotoğrafta görülen nesneler | Model çıktısı (conf=0.35) | GPU çıkarım süresi | Değerlendirme |
+|---|---|---|---:|---|
+| `00.44.17 (1).jpeg` | 1 Potato, 1 Carrot | 1 Potato (0.84), 1 Carrot (0.88) | 1,834.5 ms | **2/2 doğru** |
+| `00.44.17.jpeg` – elma karesi | 3 Apple | 3 Apple (0.86, 0.85, 0.80) | 1,756.1 ms | **3/3 doğru** |
+| `00.44.17.jpeg` – karışık kare | 3 Apple, 2 Lemon; arka planda Potato | 3 Apple (0.86, 0.85, 0.84), 2 Lemon (0.78, 0.69) | 1,801.5 ms | 5 tespit doğru; arka plandaki Potato eşik altında kalmış olabilir |
+| `00.53.31.jpeg` | 1 Apple, 1 Carrot | 1 Apple (0.79), 1 Carrot (0.77) | 1,770.1 ms | **2/2 doğru** |
+| `00.53.32 (2).jpeg` | 2 Apple, 2 Potato | 2 Apple (0.74, 0.66), 2 Potato (0.91, 0.42) | 1,878.0 ms | **4/4 doğru** |
 
-Işık yetersizliği, nesnelerin üst üste gelmesi, kamera uzaklığı, arka plan karmaşası ve küçük nesne boyutu başarısız tespitlerin temel nedenleri olarak incelenmelidir. Sayısal test kümesi sonuçları bu beş fotoğrafın gerçek etiket karşılaştırmasının yerine geçmez.
+Beş çalıştırmanın ortalama çıkarım süresi **1,808.0 ms**'dir. Aynı WhatsApp dosya adının iki farklı uygulama ekranında görünmesi nedeniyle iki ayrı çalıştırma ayrıca raporlanmıştır. Değerlendirme, ekrandaki nesnelerin elle gözlemlenen sınıf/adet bilgisi ile yapılmıştır; gerçek kutu anotasyonu bulunmadığı için bu sonuçlar saha testi niteliğindedir. Düşük güvenli Potato (0.42) ve arka planda kalan nesneler, confidence eşiğinin tespit sayısını nasıl etkilediğini göstermektedir.
+
+Işık, nesne boyutu, örtüşme ve arka plan karmaşası başarısız veya düşük güvenli tespitlerin temel nedenleridir.
 
 ## Sınırlılıklar ve sonraki adım
 
-- Eğitim toplam süreleri manifestlerde tutulmadığı için raporda yalnızca doğrulanmış 89.27 saniyelik test değerlendirme süresi verilmiştir.
-- Ham test tahminleri bulunmadığı için gerçek confusion matrix henüz hesaplanmamıştır.
-- Beş telefon fotoğrafının gerçek etiket/tahmin tablosu uygulama çıktılarıyla doldurulmalıdır.
-- Veri ve model kayıtları EVREN’de açık kaynak olarak bulunduğu için kalıcı veri/model bağlantıları README’de EVREN proje adresiyle verilmiştir.
+- Süre karşılaştırması yalnızca teslimde kullanılan `fruit_vegetables_veri2_v1` için raporlanmıştır; diğer koşuların süreleri rapora dahil edilmemiştir.
+- Confusion matrix için ham gerçek sınıf–tahmin sınıfı eşleşme dosyası bulunmadığından, yanıltıcı bir matris üretilmemiştir; veri durumu görseli ve üretim betiği repodadır.
+- Uygulama test tablosu beş gerçek çalıştırmanın model çıktıları ve ekran görüntülerindeki gözlemlerle doldurulmuştur.
+- Veri ve eğitim kayıtları EVREN'de, ana `veri2_v1` ağırlığı ise GitHub'da otomatik birleştirilen parçalarla teslim edilmiştir.
 
 ## Kaynaklar
 
