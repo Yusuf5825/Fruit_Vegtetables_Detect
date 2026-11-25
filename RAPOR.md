@@ -154,6 +154,22 @@ Beş çalıştırmanın ortalama çıkarım süresi **1,808.0 ms**'dir. Aynı Wh
 
 Özellikle 0.42 güven skoruyla gelen Potato ve arka planda kalan nesne, confidence eşiğinin sonuçlara etkisini göstermektedir. Işık, nesne boyutu, örtüşme ve arka plan karmaşası düşük güvenli veya eksik tespitlerin olası nedenleridir.
 
+### Uygulama test ekran görüntüleri
+
+![Potato ve Carrot testi](docs/figures/app_test_01_potato_carrot.png)
+
+![Üç Apple testi](docs/figures/app_test_02_apples.png)
+
+![Apple ve Lemon karışık testi](docs/figures/app_test_03_apples_lemons.png)
+
+![Apple ve Carrot testi](docs/figures/app_test_04_apple_carrot.png)
+
+![Apple ve Potato testi](docs/figures/app_test_05_apples_potatoes.png)
+
+Eğitim süresini ve GPU kaynak kullanımını gösteren veri2 v1 ekranı:
+
+![Veri2 v1 eğitim metrikleri](docs/figures/veri2_training_metrics.png)
+
 ## 9. Sonuç
 
 YOLO11 tabanlı sistem, beş sınıflı meyve-sebze nesne tespiti görevinde en iyi `fruit_vegetables_veri2_v1` modeliyle mAP@50=0.8677 ve F1=0.8967 değerlerine ulaşmıştır. Model EVREN üzerinde eğitilmiş, veri ve modeller açık kaynak olarak paylaşılmış, test sonuçları JSON olarak kaydedilmiş ve Flask uygulamasıyla kullanılabilir hale getirilmiştir. Beş gerçek uygulama çalıştırmasında ortalama çıkarım süresi 1.81 saniyedir. Uygulama sonuçları tabloya işlenmiş; düşük güvenli ve arka planda kalan nesneler ayrıca yorumlanmıştır.
