@@ -113,6 +113,7 @@ Aşağıdaki değerler incelenen manifestlerdeki fiili (`effective`) eğitim aya
 - **HSV, scale, rotation, translate ve mosaic:** Işık, kamera mesafesi, açı ve arka plan değişimlerine karşı genellemeyi artırmak için kullanılmıştır. `veri4_v2` ve `veri4_v3` koşullarında arka plan ve geometrik çeşitlilik artırılmıştır.
 - **AMP:** Hız ve GPU belleği kullanımını iyileştirmek için etkinleştirilmiştir.
 - **box=7.5, cls=0.5, dfl=1.5:** Sırasıyla kutu konumu, sınıf doğruluğu ve kutu mesafesi dağılımı kayıplarının ağırlıklarıdır.
+- **Aktivasyon / çıktı:** Detection head sınıf olasılıklarını sigmoid ile ve her nesne için kutu koordinatlarıyla üretir; aynı görüntüde birden fazla nesne olabildiği için tek softmax çıktısı kullanılmaz.
 
 ## Kişisel test sonuçları
 
