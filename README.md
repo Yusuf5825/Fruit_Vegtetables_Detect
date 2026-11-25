@@ -151,7 +151,16 @@ Gerçek confusion matrix için `confusion_matrix.py` kullanılabilir. Önce test
 
 ## Flask uygulaması ve canlı kamera testi
 
-### Yerel çalıştırma
+### Tek tıkla çalıştırma
+
+Kullanıcıların kütüphaneleri tek tek arayıp kurmasına gerek yoktur. Repo klasöründe:
+
+- **Windows:** `run_flask.bat` dosyasına çift tıklayın. İlk çalıştırmada bağımlılıklar otomatik kurulur, sonraki açılışlarda doğrudan sunucu başlar ve tarayıcı açılır.
+- **Linux/macOS:** `chmod +x run_flask.sh && ./run_flask.sh` çalıştırın.
+
+İnternet bağlantısı yalnızca ilk kurulumda Python paketlerini almak için gerekir. Model ağırlığı repo içinde parçalara ayrılmıştır ve Flask tarafından otomatik birleştirilir.
+
+Elle çalıştırmak isteyenler için:
 
 ```bash
 cd Fruit_Vegtetables_Detect
