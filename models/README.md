@@ -15,6 +15,6 @@ Bu proje ağırlıkları EVREN platformunda açık kaynak olarak paylaşılmış
 | `fruit_vegetables_veri4_v3` | EVREN proje model kaydı | 0.8417 |
 | `fruits_vegetables_v4` | EVREN proje model kaydı | 0.8441 |
 
-`fruit_vegetables_veri2_v1` ağırlığının 51.2 MB'lık `best.pt` dosyası GitHub dosya sınırı nedeniyle 73 ikili parçaya bölünerek repoya eklenmiştir. `web_flask/app.py` bu parçaları `.model_cache/fruit_vegetables_veri2_v1/best.pt` altında otomatik birleştirir; ek indirme gerekmez. Eğitim verisi, diğer ağırlıklar ve deney kayıtları EVREN proje sayfasında açık kaynak olarak paylaşılmıştır.
+`fruit_vegetables_veri2_v1` ağırlığının 51.2 MB'lık `best.pt` dosyası GitHub dosya sınırı nedeniyle 74 ikili parçaya bölünerek repoya eklenmiştir. `web_flask/app.py` bu parçaları `.model_cache/fruit_vegetables_veri2_v1/best.pt` altında otomatik birleştirir; ek indirme gerekmez. Eğitim verisi, diğer ağırlıklar ve deney kayıtları EVREN proje sayfasında açık kaynak olarak paylaşılmıştır.
 
 Diğer modelleri EVREN'den indirip `models/<model_adı>/best.pt` konumuna koyduğunuzda Flask arayüzündeki model seçim alanında görünürler.
