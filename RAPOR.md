@@ -137,6 +137,8 @@ Mevcut test JSON dosyalarında ham görüntü bazlı `gerçek sınıf → tahmin
 
 Flask uygulaması fotoğraf seçme, sürükleyip bırakma, model seçme, confidence eşiği ayarlama, kutulu sonucu gösterme, sınıf adetlerini listeleme ve inference süresini ölçme özelliklerine sahiptir.
 
+Windows'ta `run_flask.bat` dosyasına çift tıklamak ilk kurulumda bağımlılıkları otomatik kurar, modeli hazırlar ve tarayıcıyı açar. Linux/macOS'ta `./run_flask.sh` aynı akışı yürütür. Böylece kullanıcı kütüphaneleri ve model dosyasını elle aramak zorunda kalmaz.
+
 Yerel çalıştırma:
 
 ```bash
