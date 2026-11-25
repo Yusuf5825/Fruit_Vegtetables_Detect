@@ -128,7 +128,7 @@ pip install -r web_flask/requirements.txt
 python web_flask/app.py
 ```
 
-Ardından `http://127.0.0.1:5000` açılır. Uygulama GPU varsa CUDA'yı, yoksa CPU'yu seçer. Flask, `models/<model_adı>/best.pt` konumundaki ağırlıkları otomatik keşfeder. Ağırlık dosyası EVREN proje sayfasından alınarak bu konuma konmalıdır.
+Ardından `http://127.0.0.1:5000` açılır. Uygulama GPU varsa CUDA'yı, yoksa CPU'yu seçer. Teslim edilen `fruit_vegetables_veri2_v1` ağırlığı `models/fruit_vegetables_veri2_v1/parts/` altında 73 parça halinde repodadır; Flask bunları ilk açılışta otomatik olarak `.model_cache/fruit_vegetables_veri2_v1/best.pt` dosyasına birleştirir. Böylece ayrıca model indirmeye gerek kalmaz. İstenirse diğer EVREN modelleri `models/<model_adı>/best.pt` konumuna eklenebilir.
 
 ## 8. Gerçek görüntülerle test ve değerlendirme
 
